@@ -1,5 +1,5 @@
 .env
 *.log
-swarm_state.json
+blink_state.json
 __pycache__/
 *.pyc

@@ -1,5 +1,5 @@
 """
-swarm v8 — OT-driven swing bot
+Blink Trades Bot — OT-driven swing bot
 Strategy: Carlos / Omegavus Trend framework
 Instruments: SPY + QQQ (long AND short)
 Signal source: Omegavus Trend API (heatMapValue per timeframe)
@@ -46,7 +46,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(message)s",
     handlers=[
-        logging.FileHandler("swarm_v8_log.txt"),
+        logging.FileHandler("blink_trades_log.txt"),
         logging.StreamHandler()
     ]
 )
@@ -185,7 +185,7 @@ live = {}
 
 def run():
     log.info("=" * 60)
-    log.info("swarm v8 started")
+    log.info("Blink Trades Bot started")
     log.info(f"symbols: {SYMBOLS}")
     log.info(f"confirm timeframes: {CONFIRM_TFS}  threshold: +-{CONFIRM_THRESH}")
     log.info(f"session: {SESSION_START} - {SESSION_END} ET")
