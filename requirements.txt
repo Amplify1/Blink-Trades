@@ -1,0 +1,4 @@
+alpaca-py
+requests
+pytz
+python-dotenv
