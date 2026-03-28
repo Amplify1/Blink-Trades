@@ -1,6 +1,6 @@
 """
 Blink Trades Bot — OT-driven swing bot
-Strategy: Carlos / Omegavus Trend framework
+Strategy: multi-timeframe OT alignment
 Instruments: SPY + QQQ (long AND short)
 Signal source: Omegavus Trend API (heatMapValue per timeframe)
 Confirmation: VIX correlation + ES/NQ futures alignment
@@ -31,7 +31,7 @@ OT_TOKEN      = os.environ["OT_TOKEN"]
 SYMBOLS        = ["SPY", "QQQ"]
 CONFIRM_TFS    = ["M15", "M30", "M60", "M240", "D1"]   # timeframes that must align
 VIX_TFS        = ["M30", "M60", "M240"]                 # VIX timeframes to check
-CONFIRM_THRESH = 150        # +-150 — Carlos's alertsSettings threshold
+CONFIRM_THRESH = 150        # +-150 OT alignment threshold
 RISK_PCT       = 0.02       # 2% account equity per trade
 SCAN_SECS      = 300        # 5-minute scan cycle
 SESSION_START  = dtime(10, 0)
@@ -88,7 +88,7 @@ def get_signal(ot, sym):
     """
     Returns 'LONG', 'SHORT', or None.
     Requires ALL confirmation timeframes past +-CONFIRM_THRESH.
-    This is Carlos's full-alignment rule — partial = no trade.
+    Full alignment required across all timeframes — partial = no trade.
     """
     if sym not in ot:
         return None
