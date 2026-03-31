@@ -109,7 +109,7 @@ def fetch_calendar():
 
     try:
         r = requests.get(
-            f"{OT_BASE}/api/getEconomicCalendarItems",
+            f"{OT_BASE}/api/clientUser/getEconomicCalendarItems",
             params={"from": from_iso, "to": to_iso},
             headers=ot_headers(),
             timeout=10
@@ -287,8 +287,21 @@ def run():
                 eod_closed = True
 
             if not in_session():
-                log.info(f"outside session ({now_et.strftime('%H:%M %Z')}) — sleeping 60s")
-                time.sleep(60)
+                # If after session end, sleep until 9:50 AM next trading day
+                if now_et.time() > SESSION_END:
+                    tomorrow = (now_et + timedelta(days=1)).replace(
+                        hour=9, minute=50, second=0, microsecond=0
+                    )
+                    # Skip to Monday if tomorrow is weekend
+                    while tomorrow.weekday() >= 5:
+                        tomorrow += timedelta(days=1)
+                    sleep_secs = (tomorrow - now_et).total_seconds()
+                    log.info(f"market closed — sleeping until {tomorrow.strftime('%a %b %d %H:%M %Z')}")
+                    time.sleep(sleep_secs)
+                else:
+                    # Before session start — check every 60s
+                    log.info(f"pre-market ({now_et.strftime('%H:%M %Z')}) — sleeping 60s")
+                    time.sleep(60)
                 continue
 
             # ── Fetch OT data ─────────────────────────────────────────────
