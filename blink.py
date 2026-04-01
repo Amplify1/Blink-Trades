@@ -115,6 +115,9 @@ def fetch_calendar():
             timeout=10
         )
         r.raise_for_status()
+        if not r.text.strip():
+            log.info("CALENDAR  no events today")
+            return []
         events = r.json()
         high_impact = []
         for e in events:
