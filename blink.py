@@ -66,12 +66,16 @@ def ot_headers():
     return {
         "Authorization": f"Bearer {OT_TOKEN}",
         "Accept": "application/json",
+        "Cache-Control": "no-cache, no-store",
+        "Pragma": "no-cache",
         "User-Agent": "Mozilla/5.0"
     }
 
 def fetch_ot():
     r = requests.get(f"{OT_BASE}/api/clientUser/getSubscriptions",
-                     headers=ot_headers(), timeout=10)
+                     headers=ot_headers(),
+                     params={"_t": int(time.time())},
+                     timeout=10)
     if r.status_code == 401:
         raise RuntimeError(
             "OT token expired. Log into app.omegavustrend.com -> "
@@ -158,6 +162,11 @@ def get_signal(ot, sym):
     if sym not in ot:
         return None
     vals = [ot[sym]["tf"].get(tf, 0) for tf in CONFIRM_TFS]
+    # Log per-timeframe breakdown when near threshold
+    agg = ot[sym].get("aggregate", 0)
+    if abs(agg) > 100:
+        breakdown = "  ".join(f"{tf}:{v:+.0f}" for tf, v in zip(CONFIRM_TFS, vals))
+        log.info(f"{sym}  TF breakdown: {breakdown}")
     if all(v < -CONFIRM_THRESH for v in vals):
         return "SHORT"
     if all(v > CONFIRM_THRESH for v in vals):
